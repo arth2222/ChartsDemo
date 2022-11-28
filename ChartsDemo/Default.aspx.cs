@@ -21,8 +21,18 @@ namespace ChartsDemo
         public void BindChart()
         {
             TempReading tr = new TempReading();
-            List<TempReading> temps = tr.GetTempReadingsByYearMonthAndDay(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            
+            List<TempReading> tempsForYear = tr.GetTempReadingsByYearMonthAndDay(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+
+            var tempsToday = tempsForYear.Where(y => y.Month == DateTime.Now.Month && y.Day == DateTime.Now.Day);
+            var maxToday = tempsToday.Max(m => m.Temp);
+
+            var test = (from s in tempsForYear
+                       where s.Temp > 10
+                       select s).Count();
+
+            var test2 = tempsForYear.Where(z => z.Temp > 10).Count();
+
+
             Chart1.Series[0].XValueMember = "Hour";
             Chart1.Series[0].XValueType = ChartValueType.Int32;//optional
             Chart1.Series[0].YValueMembers = "Temp";
@@ -40,11 +50,11 @@ namespace ChartsDemo
             Chart1.ChartAreas[0].AxisX.Interval = 1;
             Chart1.ChartAreas[0].AxisX.IsMarginVisible = false;
             
-            Chart1.DataSource = temps;
+            Chart1.DataSource = tempsForYear;
             Chart1.DataBind();
 
-            for (int i = 0; i < temps.Count; i++)
-                Chart1.Series[0].Points[i].ToolTip = temps[i].Temp.ToString() ;
+            for (int i = 0; i < tempsForYear.Count; i++)
+                Chart1.Series[0].Points[i].ToolTip = tempsForYear[i].Temp.ToString() ;
         }
 
 
@@ -65,6 +75,9 @@ namespace ChartsDemo
         {
             Random r = new Random();
             List<TempReading> temps = new List<TempReading>();
+
+
+
             for(int i=0;i<24;i++)
             {
                 TempReading temp = new TempReading();
@@ -76,6 +89,25 @@ namespace ChartsDemo
             }
             return temps;
         }
+
+        //public List<TempReading> GetTempReadingsByYear(int year)
+        //{
+        //    Random r = new Random();
+        //    List<TempReading> temps = new List<TempReading>();
+
+
+
+        //    for (int i = 0; i < 24; i++)
+        //    {
+        //        TempReading temp = new TempReading();
+        //        temp.Temp = r.Next(-2, 7);
+        //        temp.Year = year; temp.Month = month; temp.Day = day;
+        //        temp.Hour = i;
+        //        temp.Humid = temp.Temp * 2;
+        //        temps.Add(temp);
+        //    }
+        //    return temps;
+        //}
 
     }
 }
