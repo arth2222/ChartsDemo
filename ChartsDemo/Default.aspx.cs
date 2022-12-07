@@ -30,7 +30,7 @@ namespace ChartsDemo
                        where s.Temp > 10
                        select s).Count();
 
-            var test2 = tempsForYear.Where(z => z.Temp > 10).Count();
+            var test2 = tempsForYear.Where(z => z.Temp > 10).Count(); 
 
 
             Chart1.Series[0].XValueMember = "Hour";
@@ -80,10 +80,14 @@ namespace ChartsDemo
 
             for(int i=0;i<24;i++)
             {
-                TempReading temp = new TempReading();
-                temp.Temp = r.Next(-2, 7);
-                temp.Year = year; temp.Month = month; temp.Day = day;
-                temp.Hour = i;
+                TempReading temp = new TempReading
+                {
+                    Temp = r.Next(-2, 7),
+                    Year = year,
+                    Month = month,
+                    Day = day,
+                    Hour = i
+                };
                 temp.Humid = temp.Temp * 2;
                 temps.Add(temp);
             }
