@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -15,6 +18,7 @@ namespace ChartsDemo
             if(!Page.IsPostBack)
             {
                 BindChart();
+                GetVotes();
             }
         }
 
@@ -30,34 +34,51 @@ namespace ChartsDemo
                        where s.Temp > 10
                        select s).Count();
 
-            var test2 = tempsForYear.Where(z => z.Temp > 10).Count(); 
+            var test2 = tempsForYear.Where(z => z.Temp > 10).Count();
 
 
             Chart1.Series[0].XValueMember = "Hour";
             Chart1.Series[0].XValueType = ChartValueType.Int32;//optional
             Chart1.Series[0].YValueMembers = "Temp";
-            Chart1.Series[0].ChartType = SeriesChartType.Line;
+            Chart1.Series[0].ChartType = SeriesChartType.Bar;
 
             //to serier=2 grafer/bars etc
             Chart1.Series[1].XValueMember = "Hour";
             Chart1.Series[1].XValueType = ChartValueType.Int32;//optional
             Chart1.Series[1].YValueMembers = "Humid";
-            Chart1.Series[1].ChartType = SeriesChartType.Line;
+            Chart1.Series[1].ChartType = SeriesChartType.Bar;
 
             //Chart1.DataBindTable(temps,"Hour");//using just DataBind() below
             Chart1.ChartAreas[0].AxisX.Minimum = -1;
             Chart1.ChartAreas[0].AxisX.Maximum = 24;
             Chart1.ChartAreas[0].AxisX.Interval = 1;
             Chart1.ChartAreas[0].AxisX.IsMarginVisible = false;
-            
+
             Chart1.DataSource = tempsForYear;
             Chart1.DataBind();
 
-            for (int i = 0; i < tempsForYear.Count; i++)
-                Chart1.Series[0].Points[i].ToolTip = tempsForYear[i].Temp.ToString() ;
+            //for (int i = 0; i < tempsForYear.Count; i++)
+              //  Chart1.Series[0].Points[i].ToolTip = tempsForYear[i].Temp.ToString() ;
         }
 
+        private DataTable GetVotes()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["ConnCms"].ConnectionString;
+            DataTable dt = new DataTable();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
 
+                SqlCommand cmd = new SqlCommand("SELECT * from Stemme", conn);
+                cmd.CommandType = CommandType.Text;
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                dt.Load(reader);
+                reader.Close();
+                conn.Close();
+            }
+            return dt;
+        }
 
 
     }
